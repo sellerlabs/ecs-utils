@@ -13,10 +13,6 @@ def read_json(f):
 
 def update_task_definitions(task_definition, image_name, tag, env):
     for d in task_definition['containerDefinitions']:
-        for env_kv in d['environment']:
-            if env_kv['name'] == 'ENV':
-                env_kv['value'] = env
-            
         d['image'] = image_name + ':' + tag
 
     return task_definition
