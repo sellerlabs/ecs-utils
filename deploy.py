@@ -14,7 +14,8 @@ def read_json(f):
 def update_task_definitions(task_definition, image_name, tag, env):
     for d in task_definition['containerDefinitions']:
         d['image'] = image_name + ':' + tag
-
+        d['environment'].append({"name": "ENV", "value": env})
+        
     return task_definition
 
 def register_task_definition(task_definition):

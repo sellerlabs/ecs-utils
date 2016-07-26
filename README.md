@@ -29,12 +29,7 @@
     "volumes": [],
     "containerDefinitions": [
         {
-            "environment": [
-                {
-                    "name": "ENV",
-                    "value": "prod"
-                }
-            ],
+            "environment": [],
             "name": "foo-app",
             "links": [],
             "mountPoints": [],
