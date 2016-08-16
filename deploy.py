@@ -36,6 +36,9 @@ def task_arn(task_definition):
 def update_service(service, cluster, task_arn):
     subprocess.call(['aws', 'ecs', 'update-service', '--cluster', cluster, '--service', service, '--task-definition', task_arn])
 
+def run_task(service, cluster, task_arn):
+    subprocess.call(['aws', 'ecs', 'run-task', '--cluster', cluster, '--task-definition', task_arn])
+    
 parser = argparse.ArgumentParser()
 
 parser.add_argument('definitions', metavar='d', type=str)
@@ -57,3 +60,14 @@ for service, service_def in env_config['services'].iteritems():
 
     # update service
     update_service(service_def['id'], env_config['cluster'], arn)
+
+if 'tasks' in env_config:
+    for task, task_item in env_config['tasks'].iteritems():
+        task_def = read_json(task_item['template'])
+        update_task_definitions(task_def, app['image'], args['tag'], env)
+
+        # register task
+        arn = task_arn(register_task_definition(task_def))
+
+        # run task
+        run_task(task_item['id'], env_config['cluster'], arn)
