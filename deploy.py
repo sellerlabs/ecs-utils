@@ -11,11 +11,13 @@ def read_json(f):
 
     return j
 
-def update_task_definitions(task_definition, image_name, tag, env):
+def update_task_definitions(task_definition, family, image_name, tag, env):
     for d in task_definition['containerDefinitions']:
         d['image'] = image_name + ':' + tag
         d['environment'].append({"name": "ENV", "value": env})
-        
+
+    task_definition['family'] = family
+
     return task_definition
 
 def register_task_definition(task_definition):
@@ -53,7 +55,7 @@ env_config = app['envs'][env]
 
 for service, service_def in env_config['services'].iteritems():
     task_def = read_json(service_def['template'])
-    update_task_definitions(task_def, app['image'], args['tag'], env)
+    update_task_definitions(task_def, service_def['family'], app['image'], args['tag'], env)
 
     # register task
     arn = task_arn(register_task_definition(task_def))
@@ -64,7 +66,7 @@ for service, service_def in env_config['services'].iteritems():
 if 'tasks' in env_config:
     for task, task_item in env_config['tasks'].iteritems():
         task_def = read_json(task_item['template'])
-        update_task_definitions(task_def, app['image'], args['tag'], env)
+        update_task_definitions(task_def, task_item['family'], app['image'], args['tag'], env)
 
         # register task
         arn = task_arn(register_task_definition(task_def))
